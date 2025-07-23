@@ -30,29 +30,30 @@ function generateQRCode() {
     document.getElementById("downloadBtn").style.display = "inline-block";
 }
 
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
 function downloadQRCode() {
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-        const canvas = document.querySelector("#qrcode canvas");
-        if (canvas) {
-            const dataURL = canvas.toDataURL("image/png");
-            window.open(dataURL, "_blank");
-        } else {
-            alert("QR code not ready yet.");
-        }
+    const qrImg = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
+
+    if (!qrImg) {
+        alert("QR code not ready yet.");
         return;
     }
 
-    const qrImg = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
+    if (isIOS()) {
+        const dataURL = qrImg.nodeName === "IMG" ? qrImg.src : qrImg.toDataURL("image/png");
+        window.open(dataURL, "_blank");
+        alert("On iPhone, tap and hold the image in the new tab to save it.");
+        return;
+    }
 
     const link = document.createElement("a");
     link.download = "qrcode.png";
+    link.href = qrImg.nodeName === "IMG" ? qrImg.src : qrImg.toDataURL("image/png");
 
-    if (qrImg.nodeName === "IMG") {
-        link.href = qrImg.src;
-    } else {
-        link.href = qrImg.toDataURL("image/png");
-    }
-
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 }
-
