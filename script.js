@@ -31,6 +31,17 @@ function generateQRCode() {
 }
 
 function downloadQRCode() {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+        const canvas = document.querySelector("#qrcode canvas");
+        if (canvas) {
+            const dataURL = canvas.toDataURL("image/png");
+            window.open(dataURL, "_blank");
+        } else {
+            alert("QR code not ready yet.");
+        }
+        return;
+    }
+
     const qrImg = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
 
     const link = document.createElement("a");
@@ -44,3 +55,4 @@ function downloadQRCode() {
 
     link.click();
 }
+
